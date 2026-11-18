@@ -29,8 +29,13 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->strictAuthorization()
+            ->brandName('StockFlow')
+            ->brandLogo(asset('images/stockflow-logo.svg'))
+            ->darkModeBrandLogo(asset('images/stockflow-logo-dark.svg'))
+            ->brandLogoHeight('2.25rem')
+            ->favicon(asset('favicon.svg'))
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Teal,
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
