@@ -111,6 +111,44 @@ it('rejects oversized stock exits through the Filament form without changing sto
     $this->assertDatabaseCount('stock_movements', 0);
 });
 
+it('rejects a missing product without changing stock or movement history', function () {
+    $user = User::factory()->stockManager()->create();
+    $product = Product::factory()->create(['quantity' => 8]);
+
+    expect(fn () => app(StockMovementService::class)->record($user, [
+        'type' => 'entry',
+        'product_id' => 999999,
+        'quantity' => 2,
+    ]))->toThrow(ValidationException::class);
+
+    $this->assertDatabaseHas('products', [
+        'id' => $product->getKey(),
+        'quantity' => 8,
+    ]);
+    $this->assertDatabaseCount('stock_movements', 0);
+});
+
+it('rolls back the movement and stock change if the product update fails', function () {
+    $user = User::factory()->stockManager()->create();
+    $product = Product::factory()->create(['quantity' => 8]);
+
+    Product::updated(function (Product $updatedProduct): void {
+        throw new RuntimeException('Simulated product update failure.');
+    });
+
+    expect(fn () => app(StockMovementService::class)->record($user, [
+        'type' => 'entry',
+        'product_id' => $product->getKey(),
+        'quantity' => 2,
+    ]))->toThrow(RuntimeException::class, 'Simulated product update failure.');
+
+    $this->assertDatabaseHas('products', [
+        'id' => $product->getKey(),
+        'quantity' => 8,
+    ]);
+    $this->assertDatabaseCount('stock_movements', 0);
+});
+
 it('rejects zero negative and fractional quantities without changing stock', function (mixed $quantity) {
     $user = User::factory()->stockManager()->create();
     $product = Product::factory()->create(['quantity' => 8]);
