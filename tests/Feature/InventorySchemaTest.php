@@ -5,6 +5,7 @@ use App\Models\Product;
 use App\Models\StockMovement;
 use App\Models\Supplier;
 use App\Models\User;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\QueryException;
 
 it('provides the inventory relationships and records movement ownership', function () {
@@ -37,7 +38,7 @@ it('enforces unique category names and product skus', function () {
         ->toThrow(QueryException::class);
 });
 
-it('preserves movement history when referenced records are deleted', function () {
+it('preserves stock movement history and supplier attribution when related records are deleted', function () {
     $product = Product::factory()->create();
     $supplier = Supplier::factory()->create();
     $user = User::factory()->create();
@@ -49,10 +50,9 @@ it('preserves movement history when referenced records are deleted', function ()
 
     expect(fn () => $product->category->delete())->toThrow(QueryException::class)
         ->and(fn () => $product->delete())->toThrow(QueryException::class)
-        ->and(fn () => $user->delete())->toThrow(QueryException::class);
+        ->and(fn () => $user->delete())->toThrow(QueryException::class)
+        ->and(fn () => $supplier->delete())->toThrow(AuthorizationException::class);
 
-    $supplier->delete();
-
-    expect($movement->fresh()->supplier_id)->toBeNull()
+    expect($movement->fresh()->supplier_id)->toBe($supplier->id)
         ->and(StockMovement::query()->whereKey($movement->id)->exists())->toBeTrue();
 });
