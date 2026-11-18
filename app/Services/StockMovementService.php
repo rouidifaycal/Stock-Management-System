@@ -2,11 +2,14 @@
 
 namespace App\Services;
 
+use App\Enums\UserRole;
 use App\Models\Product;
 use App\Models\StockMovement;
 use App\Models\User;
+use App\Notifications\ProductLowStockNotification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -72,6 +75,14 @@ class StockMovementService
                 ]);
             }
 
+            $stockBefore = $product->quantity;
+            $minimumStock = $product->min_stock;
+            $stockAfter = $type === 'entry'
+                ? $stockBefore + $quantity
+                : $stockBefore - $quantity;
+            $crossedIntoLowStock = $stockBefore > $minimumStock
+                && $stockAfter <= $minimumStock;
+
             $movement = StockMovement::query()->create([
                 'product_id' => $product->getKey(),
                 'user_id' => $user->getKey(),
@@ -86,6 +97,25 @@ class StockMovementService
                 $product->increment('quantity', $quantity);
             } else {
                 $product->decrement('quantity', $quantity);
+            }
+
+            if ($crossedIntoLowStock) {
+                $recipients = User::query()
+                    ->whereIn('role', [
+                        UserRole::Administrator->value,
+                        UserRole::StockManager->value,
+                    ])
+                    ->get();
+
+                Notification::send(
+                    $recipients,
+                    new ProductLowStockNotification(
+                        $product->name,
+                        $product->sku,
+                        $stockAfter,
+                        $minimumStock,
+                    ),
+                );
             }
 
             return $movement;

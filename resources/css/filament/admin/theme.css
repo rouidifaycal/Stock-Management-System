@@ -1,0 +1,117 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@source '../../../../app/Filament/**/*';
+@source '../../../../resources/views/filament/**/*';
+
+@theme {
+    --color-stockflow-ink: #102a43;
+    --color-stockflow-ocean: #17466c;
+    --color-stockflow-teal: #0f766e;
+    --color-stockflow-mint: #99f6e4;
+    --color-stockflow-surface: #f4f7fb;
+}
+
+.fi-body {
+    background-color: var(--color-stockflow-surface);
+}
+
+.fi-sidebar {
+    background-color: var(--color-stockflow-ink);
+    border-inline-end-color: #29445d;
+}
+
+.fi-sidebar-header {
+    border-bottom-color: #29445d;
+}
+
+.fi-sidebar-group-label {
+    color: #a9bdcf;
+}
+
+.fi-sidebar-item-btn {
+    border-radius: 0.75rem;
+    color: #dbe6ef;
+}
+
+.fi-sidebar-item-btn:hover {
+    background-color: rgb(255 255 255 / 7%);
+    color: #fff;
+}
+
+.fi-sidebar-item-active .fi-sidebar-item-btn {
+    background-color: rgb(15 118 110 / 35%);
+    color: #fff;
+}
+
+.fi-topbar {
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.fi-main-ctn {
+    background-color: var(--color-stockflow-surface);
+}
+
+.fi-page-header-heading {
+    color: var(--color-stockflow-ink);
+    letter-spacing: -0.025em;
+}
+
+.fi-section,
+.fi-ta-ctn,
+.fi-wi-stats-overview-stat,
+.fi-modal-window,
+.fi-dropdown-panel {
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    box-shadow: 0 10px 28px rgb(15 23 42 / 4%);
+}
+
+.fi-ta-ctn {
+    overflow: hidden;
+}
+
+.fi-btn {
+    border-radius: 0.7rem;
+    font-weight: 600;
+}
+
+.fi-input-wrp {
+    border-radius: 0.7rem;
+}
+
+.fi-notification {
+    border-radius: 1rem;
+}
+
+.fi-empty-state {
+    padding-block: 2rem;
+}
+
+.fi-simple-main {
+    border: 1px solid #e2e8f0;
+    border-radius: 1.25rem;
+    box-shadow: 0 18px 48px rgb(15 23 42 / 8%);
+}
+
+.dark .fi-body,
+.dark .fi-main-ctn {
+    background-color: #0b1220;
+}
+
+.dark .fi-topbar {
+    border-bottom-color: #29384b;
+}
+
+.dark .fi-page-header-heading {
+    color: #e2e8f0;
+}
+
+.dark .fi-section,
+.dark .fi-ta-ctn,
+.dark .fi-wi-stats-overview-stat,
+.dark .fi-modal-window,
+.dark .fi-dropdown-panel,
+.dark .fi-simple-main {
+    border-color: #29384b;
+    box-shadow: none;
+}
