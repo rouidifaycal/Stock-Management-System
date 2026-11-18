@@ -38,7 +38,11 @@ class ProductsTable
                 TextColumn::make('quantity')
                     ->label('Current stock')
                     ->badge()
-                    ->color(fn (Product $record): string => $record->quantity <= $record->min_stock ? 'danger' : 'success')
+                    ->color(fn (Product $record): string => match (true) {
+                        $record->quantity === 0 => 'danger',
+                        $record->quantity <= $record->min_stock => 'warning',
+                        default => 'success',
+                    })
                     ->description(fn (Product $record): string => "Minimum: {$record->min_stock}")
                     ->sortable(),
                 TextColumn::make('created_at')

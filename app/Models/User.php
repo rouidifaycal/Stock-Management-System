@@ -100,6 +100,9 @@ class User extends Authenticatable implements FilamentUser
             : $initials;
     }
 
+    /**
+     * @return HasMany<StockMovement, $this>
+     */
     public function stockMovements(): HasMany
     {
         return $this->hasMany(StockMovement::class);
